@@ -99,7 +99,7 @@ $ thread 1
 
 有时候我们发现应用卡住了， 通常是由于某个线程拿住了某个锁， 并且其他线程都在等待这把锁造成的。 为了排查这类问题， arthas提供了`thread -b`， 一键找出那个罪魁祸首。
 
-```sh
+```bash
 $ thread -b
 "http-bio-8080-exec-4" Id=27 TIMED_WAITING
     at java.lang.Thread.sleep(Native Method)
@@ -138,12 +138,12 @@ $ thread -b
     - java.util.concurrent.ThreadPoolExecutor$Worker@31a6493e
 ```
 
-> 注意， 目前只支持找出synchronized关键字阻塞住的线程， 如果是JUL的锁， 目前还不支持。
+> 注意， 目前只支持找出synchronized关键字阻塞住的线程， 如果是`java.util.concurrent.Lock`， 目前还不支持。
 
 
 #### thread -i, 指定采样时间间隔
 
-```sh
+```bash
 $ thread -n 3 -i 1000
 "as-command-execute-daemon" Id=4759 cpuUsage=23% RUNNABLE
     at sun.management.ThreadImpl.dumpThreads0(Native Method)
@@ -162,4 +162,17 @@ $ thread -n 3 -i 1000
     Number of locked synchronizers = 1
     - java.util.concurrent.ThreadPoolExecutor$Worker@546aeec1
 ...
+```
+
+#### thread --state ，查看指定状态的线程
+
+```bash
+[arthas@28114]$ thread --state WAITING
+Threads Total: 15, NEW: 0, RUNNABLE: 7, BLOCKED: 0, WAITING: 5, TIMED_WAITING: 3, TERMINATED: 0
+ID       NAME                      GROUP            PRIORITY STATE   %CPU     TIME     INTERRU DAEMON
+198      AsyncAppender-Worker-arth system           9        WAITING 0        0:0      false   true
+3        Finalizer                 system           8        WAITING 0        0:0      false   true
+14       RMI Scheduler(0)          system           9        WAITING 0        0:0      false   true
+2        Reference Handler         system           10       WAITING 0        0:0      false   true
+204      pool-8-thread-1           system           5        WAITING 0        0:0      false   false
 ```

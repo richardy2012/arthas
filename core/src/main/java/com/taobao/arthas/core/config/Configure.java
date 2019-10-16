@@ -1,5 +1,6 @@
 package com.taobao.arthas.core.config;
 
+import com.taobao.arthas.core.shell.ShellServerOptions;
 import com.taobao.arthas.core.util.reflect.ArthasReflectUtils;
 
 import java.lang.reflect.Field;
@@ -12,9 +13,10 @@ import static java.lang.reflect.Modifier.isStatic;
  * 配置类
  *
  * @author vlinux
+ * @author hengyunabc 2018-11-12
  */
 public class Configure {
-
+    public static final long DEFAULT_SESSION_TIMEOUT_SECONDS = ShellServerOptions.DEFAULT_SESSION_TIMEOUT/1000;
     private String ip;
     private int telnetPort;
     private int httpPort;
@@ -22,12 +24,25 @@ public class Configure {
     private String arthasCore;
     private String arthasAgent;
 
+    private String tunnelServer;
+    private String agentId;
+
+    /**
+     * report executed command
+     */
+    private String statUrl;
+
+    /**
+     * session timeout seconds
+     */
+    private long sessionTimeout = DEFAULT_SESSION_TIMEOUT_SECONDS;
+
     public String getIp() {
         return ip;
     }
 
     public void setIp(String ip) {
-        this.ip = normalizeIp(ip);
+        this.ip = ip;
     }
 
     public int getTelnetPort() {
@@ -70,6 +85,38 @@ public class Configure {
         this.arthasCore = arthasCore;
     }
 
+    public long getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    public void setSessionTimeout(long sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
+
+    public String getTunnelServer() {
+        return tunnelServer;
+    }
+
+    public void setTunnelServer(String tunnelServer) {
+        this.tunnelServer = tunnelServer;
+    }
+
+    public String getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(String agentId) {
+        this.agentId = agentId;
+    }
+
+    public String getStatUrl() {
+        return statUrl;
+    }
+
+    public void setStatUrl(String statUrl) {
+        this.statUrl = statUrl;
+    }
+
     // 对象的编码解码器
     private final static FeatureCodec codec = new FeatureCodec(';', '=');
 
@@ -91,7 +138,10 @@ public class Configure {
 
             // 非静态的才需要纳入非序列化过程
             try {
-                map.put(field.getName(), String.valueOf(ArthasReflectUtils.getFieldValueByField(this, field)));
+                Object fieldValue = ArthasReflectUtils.getFieldValueByField(this, field);
+                if (fieldValue != null) {
+                    map.put(field.getName(), String.valueOf(fieldValue));
+                }
             } catch (Throwable t) {
                 //
             }
@@ -107,29 +157,17 @@ public class Configure {
      * @param toString 序列化字符串
      * @return 反序列化的对象
      */
-    public static Configure toConfigure(String toString) {
+    public static Configure toConfigure(String toString) throws IllegalAccessException {
         final Configure configure = new Configure();
         final Map<String, String> map = codec.toMap(toString);
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            try {
-                final Field field = ArthasReflectUtils.getField(Configure.class, entry.getKey());
-                if (null != field && !isStatic(field.getModifiers())) {
-                    ArthasReflectUtils.set(field, ArthasReflectUtils.valueOf(field.getType(), entry.getValue()), configure);
-                }
-            } catch (Throwable t) {
-                //
+            final Field field = ArthasReflectUtils.getField(Configure.class, entry.getKey());
+            if (null != field && !isStatic(field.getModifiers())) {
+                ArthasReflectUtils.set(field, ArthasReflectUtils.valueOf(field.getType(), entry.getValue()), configure);
             }
         }
         return configure;
-    }
-
-    private String normalizeIp(String ip){
-        if ("127.0.0.1".equals(ip)) {
-            // bind to all network interfaces, allowing remote connections
-            return "0.0.0.0";
-        }
-        return ip;
     }
 
 }

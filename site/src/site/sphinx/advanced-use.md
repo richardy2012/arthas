@@ -5,10 +5,13 @@
 
 
 * help——查看命令帮助信息
+* [cat](cat.md)——打印文件内容，和linux里的cat命令类似
+* [pwd](pwd.md)——返回当前的工作目录，和linux命令类似
 * cls——清空当前屏幕区域
 * session——查看当前会话的信息
 * [reset](reset.md)——重置增强类，将被 Arthas 增强过的类全部还原，Arthas 服务端关闭时会重置所有增强过的类
 * version——输出当前目标 Java 进程所加载的 Arthas 版本号
+* history——打印命令历史
 * quit——退出当前 Arthas 客户端，其他 Arthas 客户端不受影响
 * shutdown——关闭 Arthas 服务端，所有 Arthas 客户端全部退出
 * [keymap](keymap.md)——Arthas快捷键列表及自定义快捷键
@@ -20,16 +23,23 @@
 * [thread](thread.md)——查看当前 JVM 的线程堆栈信息
 * [jvm](jvm.md)——查看当前 JVM 的信息
 * [sysprop](sysprop.md)——查看和修改JVM的系统属性
-* **New!** [getstatic](getstatic.md)——查看类的静态属性
+* [sysenv](sysenv.md)——查看JVM的环境变量
+* [vmoption](vmoption.md)——查看和修改JVM里诊断相关的option
+* [logger](logger.md)——查看和修改logger
+* [getstatic](getstatic.md)——查看类的静态属性
+* [ognl](ognl.md)——执行ognl表达式
+* [mbean](mbean.md)——查看 Mbean 的信息
+* [heapdump](heapdump.md)——dump java heap, 类似jmap命令的heap dump功能
 
 ## class/classloader相关
 
 
 * [sc](sc.md)——查看JVM已加载的类信息
 * [sm](sm.md)——查看已加载类的方法信息
-* [dump](dump.md)——dump 已加载类的 byte code 到特定目录
-* [redefine](redefine.md)——加载外部的`.class`文件，redefine到JVM里
 * [jad](jad.md)——反编译指定已加载类的源码
+* [mc](mc.md)——内存编绎器，内存编绎`.java`文件为`.class`文件
+* [redefine](redefine.md)——加载外部的`.class`文件，redefine到JVM里
+* [dump](dump.md)——dump 已加载类的 byte code 到特定目录
 * [classloader](classloader.md)——查看classloader的继承树，urls，类加载信息，使用classloader去getResource
 
 ## monitor/watch/trace相关
@@ -50,10 +60,10 @@
 
 ## 管道
 
-Arthas支持使用管道对上述命令的结果进行进一步的处理，如`sm org.apache.log4j.Logger | grep <init>`
+Arthas支持使用管道对上述命令的结果进行进一步的处理，如`sm java.lang.String * | grep 'index'`
 
 * grep——搜索满足条件的结果
-* plaintext——将命令的结果去除颜色
+* plaintext——将命令的结果去除ANSI颜色
 * wc——按行统计输出结果
 
 ## 后台异步任务
@@ -71,6 +81,17 @@ Arthas支持使用管道对上述命令的结果进行进一步的处理，如`s
 通过websocket连接Arthas。
 
 * [Web Console](web-console.md)
+
+## 用户数据回报
+
+在`3.1.4`版本后，增加了用户数据回报功能，方便统一做安全或者历史数据统计。
+
+在启动时，指定`stat-url`，就会回报执行的每一行命令，比如： `./as.sh --stat-url 'http://192.168.10.11:8080/api/stat'`
+
+在tunnel server里有一个示例的回报代码，用户可以自己在服务器上实现。
+
+[StatController.java](https://github.com/alibaba/arthas/blob/master/tunnel-server/src/main/java/com/alibaba/arthas/tunnel/server/app/web/StatController.java)
+
 
 ## 其他特性
 

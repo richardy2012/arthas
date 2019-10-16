@@ -4,7 +4,8 @@
     <parent>
         <groupId>com.taobao.arthas</groupId>
         <artifactId>arthas-all</artifactId>
-        <version>3.0.5-SNAPSHOT</version>
+        <version>3.1.5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>arthas-site</artifactId>
     <name>arthas-site</name>
@@ -17,13 +18,14 @@
                     <plugin>
                         <groupId>kr.motd.maven</groupId>
                         <artifactId>sphinx-maven-plugin</artifactId>
-                        <version>2.2.3</version>
+                        <version>2.6.0</version>
                         <executions>
                             <execution>
                                 <id>zh doc</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <asReport>true</asReport>
+                                    <sourceDirectory>${basedir}/src/site/sphinx</sourceDirectory>
+                                    <outputDirectory>${project.build.directory}/site/sphinx</outputDirectory>
                                     <name>Arthas documentation</name>
                                     <description>Documentation about Arthas</description>
                                 </configuration>
@@ -35,8 +37,8 @@
                                 <id>en doc</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <asReport>true</asReport>
                                     <sourceDirectory>${basedir}/src/site/sphinx/en</sourceDirectory>
+                                    <outputDirectory>${project.build.directory}/site/sphinx/en</outputDirectory>
                                     <name>Arthas English documentation</name>
                                     <description>Documentation about Arthas</description>
                                 </configuration>

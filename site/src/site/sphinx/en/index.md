@@ -1,36 +1,53 @@
 Arthas Documentation
 ===
 
-## Arthas（阿尔萨斯） 能为你做什么？
+**[中文文档/Chinese Documentation](https://alibaba.github.io/arthas/)**
 
-![arthas](arthas.png)
+![](arthas.png)
 
-`Arthas` 是Alibaba开源的Java诊断工具，深受开发者喜爱。
+Arthas is a Java diagnostic tool open-sourced by Alibaba middleware team. It is widely adopted and popular among the developers inside Alibaba. Arthas helps developers in trouble-shooting issues in production environment for Java based applications without modifying code or restarting servers.
 
-当你遇到以下类似问题而束手无策时，`Arthas`可以帮助你解决：
+### Background
 
-0. 这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？
-0. 我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？
-0. 遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？
-0. 线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！
-0. 是否有一个全局视角来查看系统的运行状况？
-0. 有什么办法可以监控到JVM的实时运行状态？
+Oftentimes the production system network is inaccessible from local development environment. If issues are encountered in production systems, it is impossible to use IDE to debug the application remotely. What's even worse, debugging in production environment is unacceptable, as it will suspend all the threads, leading to services downtime.
 
-`Arthas`采用命令行交互模式，同时提供丰富的 `Tab` 自动补全功能，进一步方便进行问题的定位和诊断。
+Developers could always try to reproduce the same issue on the test/staging environment. However, this is tricky as some issues cannot be reproduced easily in a different environment, or even disappear once restarted. 
 
+And if you're thinking of adding some logs to your code to help trouble-shoot the issue, you will have to go through the following lifecycle: test, staging, and then to production. Time is money! This approach is inefficient! Worse still, the issue may not be fixed since it might be irreproducible once the JVM is restarted, as described above.
+
+Arthas is built to solve these issues. A developer can troubleshoot production issues on the fly. No JVM restart, no additional code changes. Arthas works as an observer, that is, it will never suspend your running threads.
+
+### Key features
+
+* Check whether a class is loaded? Or where the class is loaded from? (Useful for trouble-shooting jar file conflicts)
+* Decompile a class to ensure the code is running as expected.
+* Check classloader statistics, e.g. the number of classloaders, the number of classes loaded per classloader, the classloader hierarchy, possible classloader leaks, etc.
+* Check the method invocation details, e.g. method parameter, returned values, exceptions and etc.
+* Check the stack trace of specified method invocation. This is useful when a developer wants to know the caller of the method.
+* Trace the method invocation to find slow sub-invocations.
+* Monitor method invocation statistics, e.g. QPS (Query Per Second), RT (Return Time), success rate and etc.
+* Monitor system metrics, thread states and CPU usage, GC statistics and etc.
+* Supports command line interactive mode, with auto-complete feature enabled.
+* Supports telnet and WebSocket, which enables both local and remote diagnostics with command line and browsers.
+* Supports JDK 6+
+* Supports Linux/Mac/Windows
+
+
+**If you are using Arthas, please let us know. Your use is very important to us: [View](https://github.com/alibaba/arthas/issues/111)**
 
 Contents
 --------
 
-* [安装](install-detail.md)
-* [快速入门](quick-start.md)
-* [进阶使用](advanced-use.md)
-* [命令列表](commands.md)
-* [用户案例](https://github.com/alibaba/arthas/labels/user-case)
-* [Release Notes](release-notes.md)
-* [Questions and answers](https://github.com/alibaba/arthas/labels/question-answered)
+* [Online tutorials(Recommend)](https://alibaba.github.io/arthas/arthas-tutorials?language=en)
+* [Installation](install-detail.md)
+* [Download](download.md)
+* [Quick start](quick-start.md)
+* [Advanced usage](advanced-use.md)
+* [Commands](commands.md)
+* [WebConsole](web-console.md)
+* [Docker](docker.md)
+* [User cases](https://github.com/alibaba/arthas/issues?q=label%3Auser-case)
+* [Questions and answers](https://github.com/alibaba/arthas/issues?q=label%3Aquestion-answered)
 * [Fork me at GitHub](https://github.com/alibaba/arthas)
-* [参与贡献](https://github.com/alibaba/arthas/blob/master/CONTRIBUTING.md)
-
-
-
+* [Compile and debug/CONTRIBUTING](https://github.com/alibaba/arthas/blob/master/CONTRIBUTING.md#)
+* [Release Notes](https://github.com/alibaba/arthas/releases)

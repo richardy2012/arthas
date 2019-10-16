@@ -1,76 +1,111 @@
-
-
 ## Arthas
 
 ![arthas](site/src/site/sphinx/arthas.png)
 
-English version goes [here](README_EN.md).
+[![Build Status](https://travis-ci.org/alibaba/arthas.svg?branch=master)](https://travis-ci.org/alibaba/arthas)
+[![codecov](https://codecov.io/gh/alibaba/arthas/branch/master/graph/badge.svg)](https://codecov.io/gh/alibaba/arthas)
+[![maven](https://img.shields.io/maven-central/v/com.taobao.arthas/arthas-packaging.svg)](https://search.maven.org/search?q=g:com.taobao.arthas)
+![license](https://img.shields.io/github/license/alibaba/arthas.svg)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/alibaba/arthas.svg)](http://isitmaintained.com/project/alibaba/arthas "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/alibaba/arthas.svg)](http://isitmaintained.com/project/alibaba/arthas "Percentage of issues still open")
 
-`Arthas` 是Alibaba开源的Java诊断工具，深受开发者喜爱。
+`Arthas` is a Java Diagnostic tool open sourced by Alibaba.
 
-当你遇到以下类似问题而束手无策时，`Arthas`可以帮助你解决：
+Arthas allows developers to troubleshoot production issues for Java applications without modifying code or restarting servers.
 
-0. 这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？
-0. 我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？
-0. 遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？
-0. 线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！
-0. 是否有一个全局视角来查看系统的运行状况？
-0. 有什么办法可以监控到JVM的实时运行状态？
+[中文说明/Chinese Documentation](README_CN.md)
 
-`Arthas`采用命令行交互模式，同时提供丰富的 `Tab` 自动补全功能，进一步方便进行问题的定位和诊断。
+### Background
+
+Often times, the production system network is inaccessible from the local development environment. If issues are encountered in production systems, it is impossible to use IDEs to debug the application remotely. More importantly, debugging in production environment is unacceptable, as it will suspend all the threads, resulting in the suspension of business services. 
+
+Developers could always try to reproduce the same issue on the test/staging environment. However, this is tricky as some issues cannot be reproduced easily on a different environment, or even disappear once restarted. 
+
+And if you're thinking of adding some logs to your code to help troubleshoot the issue, you will have to go through the following lifecycle; test, staging, and then to production. Time is money! This approach is inefficient! Besides, the issue may not be reproducible once the JVM is restarted, as described above.
+
+Arthas was built to solve these issues. A developer can troubleshoot your production issues on-the-fly. No JVM restart, no additional code changes. Arthas works as an observer, which will never suspend your existing threads.
+
+### Key features
+
+* Check whether a class is loaded, or where the class is being loaded. (Useful for troubleshooting jar file conflicts)
+* Decompile a class to ensure the code is running as expected.
+* View classloader statistics, e.g. the number of classloaders, the number of classes loaded per classloader, the classloader hierarchy, possible classloader leaks, etc.
+* View the method invocation details, e.g. method parameter, return object, thrown exception, and etc.
+* Check the stack trace of specified method invocation. This is useful when a developers wants to know the caller of the said method.
+* Trace the method invocation to find slow sub-invocations.
+* Monitor method invocation statistics, e.g. qps, rt, success rate and etc.
+* Monitor system metrics, thread states and cpu usage, gc statistics, and etc.
+* Supports command line interactive mode, with auto-complete feature enabled.
+* Supports telnet and websocket, which enables both local and remote diagnostics with command line and browsers.
+* Supports JDK 6+.
+* Supports Linux/Mac/Windows.
 
 
+### Online Tutorials(Recommend)
 
+* [Arthas Basics](https://alibaba.github.io/arthas/arthas-tutorials?language=en&id=arthas-basics)
+* [Arthas Advanced](https://alibaba.github.io/arthas/arthas-tutorials?language=en&id=arthas-advanced)
 
-### 快速开始
+### Quick start
 
-#### Linux/Unix/Mac
+#### Use `arthas-boot`(Recommend)
 
-安装Arthas:
+Download`arthas-boot.jar`，Start with `java` command:
 
+```bash
+curl -O https://alibaba.github.io/arthas/arthas-boot.jar
+java -jar arthas-boot.jar
 ```
+
+Print usage:
+
+```bash
+java -jar arthas-boot.jar -h
+```
+
+#### Use `as.sh`
+
+You can install Arthas with one single line command on Linux, Unix, and Mac. Copy the following command and paste it into the command line, then press *Enter* to run:
+
+```bash
 curl -L https://alibaba.github.io/arthas/install.sh | sh
 ```
 
-启动Arthas:
+The command above will download the bootstrap script `as.sh` to the current directory. You can move it the any other place you want, or put its location in `$PATH`.
 
-```
-./as.sh
-```
-
-#### Windows
-
-1. 点击 [这里](http://search.maven.org/classic/#search%7Cga%7C1%7Cg%3A%22com.taobao.arthas%22%20AND%20a%3A%22arthas-packaging%22) 下载最新的Arthas zip包
-2. 解压缩zip包.
-3. 进入bin目录
-4. 执行以下命令 `as.bat $PID`
+You can enter its interactive interface by executing `as.sh`, or execute `as.sh -h` for more help information.
 
 
-### 文档
+### Documentation
 
-社区正在进行英文版本的翻译工作，如果您有兴趣请在 [这里](https://github.com/alibaba/arthas/issues/51)留言。
+* [Online Tutorials(Recommend)](https://alibaba.github.io/arthas/arthas-tutorials?language=en)
+* [User manual](https://alibaba.github.io/arthas/en)
+* [Installation](https://alibaba.github.io/arthas/en/install-detail.html)
+* [Download](https://alibaba.github.io/arthas/en/download.html)
+* [Quick start](https://alibaba.github.io/arthas/en/quick-start.html)
+* [Advanced usage](https://alibaba.github.io/arthas/en/advanced-use.html)
+* [Commands](https://alibaba.github.io/arthas/en/commands.html)
+* [WebConsole](https://alibaba.github.io/arthas/en/web-console.html)
+* [Docker](https://alibaba.github.io/arthas/en/docker.html)
+* [User cases](https://github.com/alibaba/arthas/issues?q=label%3Auser-case)
+* [Questions and answers](https://github.com/alibaba/arthas/issues?utf8=%E2%9C%93&q=label%3Aquestion-answered+)
+* [Compile and debug/How to contribute](https://github.com/alibaba/arthas/blob/master/CONTRIBUTING.md)
+* [Release Notes](https://github.com/alibaba/arthas/releases)
 
-* [用户文档](https://alibaba.github.io/arthas/)
-* [安装](https://alibaba.github.io/arthas/install-detail.html)
-* [快速入门](https://alibaba.github.io/arthas/quick-start.html)
-* [进阶使用](https://alibaba.github.io/arthas/advanced-use.html)
-* [Questions and answers](https://github.com/alibaba/arthas/labels/question-answered)
-* [参与贡献](https://github.com/alibaba/arthas/blob/master/CONTRIBUTING.md)
 
-
-### 案例展示
+### Feature Showcase
 
 #### Dashboard
 
-* https://alibaba.github.io/arthas/dashboard
+* https://alibaba.github.io/arthas/en/dashboard
 
 ![dashboard](site/src/site/sphinx/_static/dashboard.png)
 
 #### Thread
 
-一目了然的了解系统的状态，哪些线程比较占cpu？他们到底在做什么？
+See what is eating your cpu (ranked by top cpu usage) and what is going on there in one glance:
 
-```
+```bash
 $ thread -n 3
 "as-command-execute-daemon" Id=29 cpuUsage=75% RUNNABLE
     at sun.management.ThreadImpl.dumpThreads0(Native Method)
@@ -99,7 +134,7 @@ $ thread -n 3
 
 #### jad
 
-对类进行反编译:
+Decompile your class with one shot:
 
 ```java
 $ jad javax.servlet.Servlet
@@ -136,11 +171,28 @@ public interface Servlet {
 }
 ```
 
+#### mc
+
+Memory compiler, compiles `.java` files into `.class` files in memory.
+
+```bash
+mc /tmp/Test.java
+```
+
+#### redefine
+
+Load the external `*.class` files to re-define the loaded classes in JVM.
+
+```bash
+redefine /tmp/Test.class
+redefine -c 327a647b /tmp/Test.class /tmp/Test\$Inner.class
+```
+
 #### sc
 
-查找JVM中已经加载的类
+Search any loaded class with detailed information.
 
-```
+```bash
 $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
  class-info        org.springframework.web.context.support.XmlWebApplicationContext
  code-source       /Users/xxx/work/test/WEB-INF/lib/spring-web-3.2.11.RELEASE.jar
@@ -174,9 +226,9 @@ $ sc -d org.springframework.web.context.support.XmlWebApplicationContext
 
 #### stack
 
-查看方法 `test.arthas.TestStack#doGet` 的调用堆栈：
+View the call stack of `test.arthas.TestStack#doGet`:
 
-```
+```bash
 $ stack test.arthas.TestStack doGet
 Press Ctrl+C to abort.
 Affect(class-cnt:1 , method-cnt:1) cost in 286 ms.
@@ -209,15 +261,15 @@ ts=2018-09-18 10:11:45;thread_name=http-bio-8080-exec-10;id=d9;is_daemon=true;pr
 
 #### Trace
 
-观察方法执行的时候那个子调用比较慢:
+See what is slowing down your method invocation with trace command:
 
 ![trace](site/src/site/sphinx/_static/trace.png)
 
 #### Watch
 
-观察方法 `test.arthas.TestWatch#doGet` 执行的入参，仅当方法抛出异常时才输出。
+Watch the first parameter and thrown exception of `test.arthas.TestWatch#doGet` only if it throws exception.
 
-```
+```bash
 $ watch test.arthas.TestWatch doGet {params[0], throwExp} -e
 Press Ctrl+C to abort.
 Affect(class-cnt:1 , method-cnt:1) cost in 65 ms.
@@ -227,11 +279,51 @@ ts=2018-09-18 10:26:28;result=@ArrayList[
 ]
 ```
 
+#### Monitor
+
+Monitor a specific method invocation statistics, including total number of invocations, average response time, success rate, and every 5 seconds:
+
+```bash
+$ monitor -c 5 org.apache.dubbo.demo.provider.DemoServiceImpl sayHello
+Press Ctrl+C to abort.
+Affect(class-cnt:1 , method-cnt:1) cost in 109 ms.
+ timestamp            class                                           method    total  success  fail  avg-rt(ms)  fail-rate
+----------------------------------------------------------------------------------------------------------------------------
+ 2018-09-20 09:45:32  org.apache.dubbo.demo.provider.DemoServiceImpl  sayHello  5      5        0     0.67        0.00%
+
+ timestamp            class                                           method    total  success  fail  avg-rt(ms)  fail-rate
+----------------------------------------------------------------------------------------------------------------------------
+ 2018-09-20 09:45:37  org.apache.dubbo.demo.provider.DemoServiceImpl  sayHello  5      5        0     1.00        0.00%
+
+ timestamp            class                                           method    total  success  fail  avg-rt(ms)  fail-rate
+----------------------------------------------------------------------------------------------------------------------------
+ 2018-09-20 09:45:42  org.apache.dubbo.demo.provider.DemoServiceImpl  sayHello  5      5        0     0.43        0.00%
+```
+
+#### Time Tunnel(tt)
+
+Record method invocation data, so that you can check the method invocation parameters, returned value, and thrown exceptions later. It works as if you could come back and replay the past method invocation via time tunnel.
+
+```bash
+$ tt -t org.apache.dubbo.demo.provider.DemoServiceImpl sayHello
+Press Ctrl+C to abort.
+Affect(class-cnt:1 , method-cnt:1) cost in 75 ms.
+ INDEX   TIMESTAMP            COST(ms)  IS-RET  IS-EXP   OBJECT         CLASS                          METHOD
+-------------------------------------------------------------------------------------------------------------------------------------
+ 1000    2018-09-20 09:54:10  1.971195  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1001    2018-09-20 09:54:11  0.215685  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1002    2018-09-20 09:54:12  0.236303  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1003    2018-09-20 09:54:13  0.159598  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1004    2018-09-20 09:54:14  0.201982  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1005    2018-09-20 09:54:15  0.214205  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1006    2018-09-20 09:54:16  0.241863  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1007    2018-09-20 09:54:17  0.305747  true    false    0x55965cca     DemoServiceImpl                sayHello
+ 1008    2018-09-20 09:54:18  0.18468   true    false    0x55965cca     DemoServiceImpl                sayHello
+```
+
 #### Classloader
 
-了解当前系统中有多少类加载器，以及每个加载器加载的类数量，帮助您判断是否有类加载器泄露。
-
-```
+```bash
 $ classloader
  name                                                  numberOfInstances  loadedCountTotal
  BootstrapClassLoader                                  1                  3346
@@ -248,7 +340,119 @@ $ classloader
 
 #### Web Console
 
-* https://alibaba.github.io/arthas/web-console
+* https://alibaba.github.io/arthas/en/web-console
 
 ![web console](site/src/site/sphinx/_static/web-console-local.png)
 
+
+### Known Users
+
+Welcome to register the company name in this issue: https://github.com/alibaba/arthas/issues/111 (in order of registration)
+
+![Alibaba](static/alibaba.png)
+![Alipay](static/alipay.png)
+![Aliyun](static/aliyun.png)
+![Taobao](static/taobao.png)
+![Tmall](static/tmall.png)
+![微医](static/weiyi.png)
+![卓越教育](static/zhuoyuejiaoyu.png)
+![狐狸金服](static/hulijingfu.png)
+![三体云](static/santiyun.png)
+![证大文化](static/zhengdawenhua.png)
+![连连支付](static/lianlianpay.png)
+![Acmedcare+](static/acmedcare.png)
+![好慷](static/homeking365_log.png)
+![来电科技](static/laidian.png)
+![四格互联](static/sigehulian.png)
+![ICBC](static/icbc.png)
+![陆鹰](static/luying.png)
+![玩友时代](static/wangyoushidai.png)
+![她社区](static/tashequ.png)
+![龙腾出行](static/longtengchuxing.png)
+![foscam](static/foscam.png)
+![二维火](static/2dfire.png)
+![lanxum](static/lanxum_com.png)
+![纳里健康](static/ngarihealth.png)
+![掌门1对1](static/zhangmen.png)
+![offcn](static/offcn.png)
+![sia](static/sia.png)
+![振安资产](static/zhenganzichang.png)
+![菠萝](static/bolo.png)
+![中通快递](static/zto.png)
+![光点科技](static/guangdian.png)
+![广州工程技术职业学院](static/gzvtc.jpg)
+![mstar](static/mstar.png)
+![xwbank](static/xwbank.png)
+![imexue](static/imexue.png)
+![keking](static/keking.png)
+![secoo](static/secoo.jpg)
+![viax](static/viax.png)
+![yanedu](static/yanedu.png)
+![duia](static/duia.png)
+![哈啰出行](static/hellobike.png)
+![hollycrm](static/hollycrm.png)
+![citycloud](static/citycloud.jpg)
+![yidianzixun](static/yidianzixun.png)
+![神州租车](static/zuche.png)
+![天眼查](static/tianyancha.png)
+![商脉云](static/anjianyun.png)
+![三新文化](static/sanxinbook.png)
+![雪球财经](static/xueqiu.png)
+![百安居](static/bthome.png)
+![安心保险](static/95303.png)
+![杭州源诚科技](static/hzyc.png)
+![91moxie](static/91moxie.png)
+![智慧开源](static/wisdom.png)
+![富佳科技](static/fujias.png)
+![鼎尖软件](static/dingjiansoft.png)
+![广通软件](static/broada.png)
+![九鼎瑞信](static/evercreative.jpg)
+![小米有品](static/xiaomiyoupin.png)
+![欧冶云商](static/ouyeel.png)
+![投投科技](static/toutou.png)
+![饿了么](static/ele.png)
+![58同城](static/58.png)
+![上海浪沙](static/runsa.png)
+![符律科技](static/fhldtech.png)
+![顺丰科技](static/sf.png)
+![新致软件](static/newtouch.png)
+![北京华宇信息](static/thunisoft.png)
+![太平洋保险](static/cpic.png)
+![旅享网络](static/risingch.png)
+![水滴互联](static/shuidihuzhu.png)
+![贝壳找房](static/ke.png)
+![嘟嘟牛](static/dodonew.png)
+![云幂信息](static/yunmixinxi.png)
+![随手科技](static/sui.png)
+![妈妈去哪儿](static/mamaqunaer.jpg)
+![云实信息](static/realscloud.png)
+![BBD数联铭品](static/bbdservice.png)
+![伙伴集团](static/zhaoshang800.png)
+![数梦工场](static/dtdream.png)
+![安恒信息](static/dbappsecurity.png)
+![亚信科技](static/asiainfo.png)
+![云舒写](static/yunshuxie.png)
+![微住](static/iweizhu.png)
+![月亮小屋](static/bluemoon.png)
+
+### Derivative Projects
+
+* [Bistoury: A project that integrates Arthas](https://github.com/qunarcorp/bistoury)
+* [A fork of arthas using MVEL](https://github.com/XhinLiang/arthas)
+
+### Credit
+
+#### Contributors
+
+This project exists thanks to all the people who contribute.
+
+<a href="https://github.com/alibaba/arthas/graphs/contributors"><img src="https://opencollective.com/arthas/contributors.svg?width=890&button=false" /></a>
+
+#### Projects
+
+* [greys-anatomy](https://github.com/oldmanpushcart/greys-anatomy): The Arthas code base has derived from Greys, we thank for the excellent work done by Greys.
+* [termd](https://github.com/termd/termd): Arthas's terminal implementation is based on termd, an open source library for writing terminal applications in Java.
+* [crash](https://github.com/crashub/crash): Arthas's text based user interface rendering is based on codes extracted from [here](https://github.com/crashub/crash/tree/1.3.2/shell)
+* [cli](https://github.com/eclipse-vertx/vert.x/tree/master/src/main/java/io/vertx/core/cli): Arthas's command line interface implementation is based on cli, open sourced by vert.x
+* [compiler](https://github.com/skalogs/SkaETL/tree/master/compiler) Arthas's memory compiler.
+* [Apache Commons Net](https://commons.apache.org/proper/commons-net/) Arthas's telnet client.

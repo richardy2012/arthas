@@ -19,12 +19,11 @@ import java.util.Properties;
 import static com.taobao.text.ui.Element.label;
 
 /**
- * A command to display all the keymap for the specified connection.
  * @author ralf0131 2017-01-09 14:03.
  */
 @Name("sysprop")
 @Summary("Display, and change the system properties.")
-@Description(Constants.EXAMPLE + "sysprop\n"+ "sysprop file.encoding\n" + "sysprop production.mode true\n" +
+@Description(Constants.EXAMPLE + "  sysprop\n"+ "  sysprop file.encoding\n" + "  sysprop production.mode true\n" +
         Constants.WIKI + Constants.WIKI_HOME + "sysprop")
 public class SystemPropertyCommand extends AnnotatedCommand {
 
@@ -45,6 +44,7 @@ public class SystemPropertyCommand extends AnnotatedCommand {
 
     @Override
     public void process(CommandProcess process) {
+        int status = 0;
         try {
             if (StringUtils.isBlank(propertyName) && StringUtils.isBlank(propertyValue)) {
                 // show all system properties
@@ -53,7 +53,7 @@ public class SystemPropertyCommand extends AnnotatedCommand {
                 // view the specified system property
                 String value = System.getProperty(propertyName);
                 if (value == null) {
-                    process.write("In order to change the system properties, you must specify the property value.\n");
+                    process.write("There is no property with the key " + propertyName + ".\n");
                 } else {
                     process.write(propertyName + "=" + value + "\n");
                 }
@@ -65,8 +65,9 @@ public class SystemPropertyCommand extends AnnotatedCommand {
             }
         } catch (Throwable t) {
             process.write("Error during setting system property: " + t.getMessage() + "\n");
+            status = 1;
         } finally {
-            process.end();
+            process.end(status);
         }
     }
 
